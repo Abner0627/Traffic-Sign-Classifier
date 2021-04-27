@@ -66,17 +66,19 @@ for epoch in range(config.Epoch):
         optim_m.step()
     
     model.eval()
-    PR = []
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
             data = Data_V.to(device)
             pred, _ = model(data)
 
             out = pred.cpu().data.numpy()
-            PR.append(np.argmax(out, axis=1))
+            pr  = np.argmax(out, axis=1)
+            if nval==0:
+                prd = pr
+            else:
+                prd = np.concatenate((prd, pr))
 
-        pr = np.array(PR)
-        hd = (pr==valD['labels'])
+        hd = (prd==valD['labels'])
         acc = hd/pr.shape[0] 
 
         print('epoch[{}], loss:{:.4f}, val_acc:{:.4f}'
