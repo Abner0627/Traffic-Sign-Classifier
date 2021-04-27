@@ -28,7 +28,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #%% Parameters
 bz = config.batch
 model = model.CNN_01()
-optim_m = optim.SGD(model.parameters(), lr=config.lr)
+optim_m = optim.Adam(model.parameters(), lr=config.lr)
 loss_func = nn.CrossEntropyLoss()
 
 model.to(device)

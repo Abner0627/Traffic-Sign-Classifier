@@ -1,3 +1,3 @@
 batch = 32
-lr = 1e-4
+lr = 1e-3
 Epoch = 30
