@@ -35,9 +35,9 @@ model.to(device)
 loss_func.to(device)
 
 #%% Pack
-tra_data = torch.from_numpy(traD['features'].transpose(0,3,1,2)).type(torch.FloatTensor)
-tes_data = torch.from_numpy(tesD['features'].transpose(0,3,1,2)).type(torch.FloatTensor)
-val_data = torch.from_numpy(valD['features'].transpose(0,3,1,2)).type(torch.FloatTensor)
+tra_data = torch.from_numpy(func._norm(traD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
+tes_data = torch.from_numpy(func._norm(tesD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
+val_data = torch.from_numpy(func._norm(valD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
 
 tra_label = torch.from_numpy(traD['labels']).type(torch.FloatTensor)
 tes_label = torch.from_numpy(tesD['labels']).type(torch.FloatTensor)
