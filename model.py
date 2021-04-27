@@ -14,33 +14,33 @@ class CNN_01(nn.Module):
                 )
             return F
         self.cv1 = nn.Sequential(
-            conv_bn_relu(3, 16),
-            conv_bn_relu(16, 16),
+            conv_bn_relu(3, 8),
+            conv_bn_relu(8, 8),
             
             nn.MaxPool2d(2),
             
-            conv_bn_relu(16, 64),
-            conv_bn_relu(64, 64),
+            conv_bn_relu(8, 16),
+            conv_bn_relu(16, 16),
         )
         self.cv2 = nn.Sequential(
-            nn.Conv2d(64, 16, kernel_size=1),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(16, 8, kernel_size=1),
+            nn.BatchNorm2d(8),
             nn.ReLU(),
             nn.MaxPool2d(2),           
         )
 
         self.FC = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(1024, 256),
+            nn.Linear(512, 128),
             nn.ReLU(),
-            nn.Linear(256, 43),
+            nn.Linear(128, 43),
         )
         self.tap_MP = nn.MaxPool2d(8)
         self.tap_AP = nn.AvgPool2d(8)
         self.MLP = nn.Sequential(
-            nn.Linear(16, 4),
+            nn.Linear(8, 2),
             nn.ReLU(),
-            nn.Linear(4, 16)
+            nn.Linear(2, 8)
             )    
         self.sf_CBAM = nn.Softmax(-1)        
         self.sf = nn.Softmax(-1)
