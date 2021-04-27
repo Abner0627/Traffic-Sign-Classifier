@@ -50,7 +50,7 @@ class CNN_01(nn.Module):
         bz = x.size(0)
         y1 = self.cv1(x)
         y2 = self.cv2(y1)
-        print(y2.size())
+        # print(y2.size())
         y2_MP = self.MLP(self.tap_MP(y2).view(bz, -1))
         y2_AP = self.MLP(self.tap_AP(y2).view(bz, -1))
         ch_atm = self.sf(y2_MP + y2_AP)
