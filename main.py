@@ -79,7 +79,7 @@ for epoch in range(config.Epoch):
                 prd = np.concatenate((prd, pr))
 
         hd = (prd==valD['labels'])
-        acc = hd/pr.shape[0] 
+        acc = np.sum(hd/pr.shape[0])
 
         print('epoch[{}], loss:{:.4f}, val_acc:{:.4f}'
                 .format(epoch+1, loss.item(), acc))    
