@@ -26,33 +26,39 @@ class CNN_01(nn.Module):
             nn.Conv2d(64, 16, kernel_size=1),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            
-            nn.MaxPool2d(2), 
-
-            conv_bn_relu(16, 64),
-            conv_bn_relu(64, 64),
-            conv_bn_relu(64, 64),           
+            nn.MaxPool2d(2),           
         )
+
         self.FC = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(4096, 1024),
-            nn.ReLU(),
             nn.Linear(1024, 256),
             nn.ReLU(),
             nn.Linear(256, 43),
         )
+        self.tap_MP = nn.MaxPool2d(8)
+        self.tap_AP = nn.AvgPool2d(8)
+        self.MLP = nn.Sequential(
+            nn.Linear(16, 4),
+            nn.ReLU(),
+            nn.Linear(4, 16)
+            )    
+        self.sf_CBAM = nn.Softmax(-1)        
         self.sf = nn.Softmax(-1)
     def forward(self, x):
         bz = x.size(0)
         y1 = self.cv1(x)
         y2 = self.cv2(y1)
-        pred = self.sf(self.FC(y2))
-        # print(y3.size())
-        return pred
+        y2_MP = self.MLP(self.tap_MP(y2).view(bz, -1))
+        y2_AP = self.MLP(self.tap_AP(y2).view(bz, -1))
+        ch_atm = self.sf(y2_MP + y2_AP)
+        y3 = y2 * ch_atm.view(bz, -1, 1, 1)
+        pred = self.sf(self.FC(y3))
+        return pred, ch_atm
 
 #%% Test
 if __name__ == "__main__":
     x = torch.rand(32, 3, 32, 32)
     F = CNN_01()
-    y = F(x)
-    print(y)
+    y, at = F(x)
+    print(y.size())
+    print(at.size())
