@@ -73,8 +73,8 @@ for epoch in range(config.Epoch):
             pred, _ = model(data)
 
             out = pred.cpu().data.numpy()
-            PR.append(np.argmax(out))
-            
+            PR.append(np.argmax(out, axis=1))
+
         pr = np.array(PR)
         hd = (pr==valD['labels'])
         acc = hd/pr.shape[0] 
