@@ -7,7 +7,6 @@ import model
 import matplotlib.pyplot as plt
 
 import torch
-import torchvision
 import torch.optim as optim
 import torch.nn as nn
 
@@ -46,8 +45,8 @@ model = model.ResNet18()
 optim_m = optim.Adam(model.parameters(), lr=config.lr)
 loss_func = nn.CrossEntropyLoss()
 
-model.to(device)
-loss_func.to(device)
+model = model.to(device)
+loss_func = loss_func.to(device)
 
 #%% Pack
 tra_data = torch.from_numpy(func._norm(traImg)).type(torch.FloatTensor)
@@ -72,7 +71,8 @@ for epoch in range(config.Epoch):
     for ntra, (Data, Label) in enumerate(tra_dataloader):
         optim_m.zero_grad()
         data_rgb = Data[:,:3,:,:].to(device)
-        data_gray = Data[:,-1,:,:].to(device)
+        data_gray = Data[:,-1,:,:].unsqueeze(1)
+        data_gray = data_gray.to(device)
         val = Label.type(torch.long).to(device)
         pred = model(data_rgb, data_gray)
         
@@ -84,7 +84,8 @@ for epoch in range(config.Epoch):
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
             data_rgb = Data_V[:,:3,:,:].to(device)
-            data_gray = Data_V[:,-1,:,:].to(device)
+            data_gray = Data_V[:,-1,:,:].unsqueeze(1)
+            data_gray = data_gray.to(device)
             pred = model(data_rgb, data_gray)
 
             out = pred.cpu().data.numpy()
@@ -99,4 +100,26 @@ for epoch in range(config.Epoch):
         acc = (hd/va.shape[0])
 
         print('epoch[{}], loss:{:.4f}, val_acc:{:.4f}'
-                .format(epoch+1, loss.item(), acc))    
+                .format(epoch+1, loss.item(), acc))  
+
+#%% Test
+model.eval()
+with torch.no_grad():
+    for ntes, (Data_E, Label_E) in enumerate(tes_dataloader):
+        data_rgb = Data_E[:,:3,:,:].to(device)
+        data_gray = Data_E[:,-1,:,:].unsqueeze(1)
+        data_gray = data_gray.to(device)
+        pred = model(data_rgb, data_gray)
+
+        out = pred.cpu().data.numpy()
+        pr  = np.argmax(out, axis=1)
+        if nval==0:
+            prd = pr
+        else:
+            prd = np.concatenate((prd, pr))
+
+    te = tesD['labels']
+    hd = np.sum(prd==te)
+    acc = (hd/va.shape[0])
+
+    print('test_acc:{:.4f}'.format(acc)) 

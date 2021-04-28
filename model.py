@@ -103,8 +103,7 @@ class ResNet18(nn.Module):
             nn.Flatten(),
             nn.Linear(128, 64),
             nn.ReLU(),
-            nn.Linear(64, 43),
-            nn.Softmax(-1)
+            nn.Linear(64, 43)
         )
     def forward(self, rgb, gray):
         y1_rgb = self.cvrgb(rgb)
