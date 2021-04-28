@@ -37,7 +37,6 @@ traImg = np.concatenate((traRGB, traGray), axis=1)
 valImg = np.concatenate((valRGB, valGray), axis=1)
 tesImg = np.concatenate((tesRGB, tesGray), axis=1)
 
-exit()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
