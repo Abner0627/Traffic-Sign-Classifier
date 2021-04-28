@@ -111,7 +111,7 @@ for epoch in range(config.Epoch):
         hd = np.sum(prd==va)
         acc = (hd/va.shape[0])
 
-        print('epoch[{}], loss:{:.4f}, val_acc:{:.4f}'
+        print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
                 .format(epoch+1, loss.item(), acc)) 
 
         writer.add_scalar("Loss", loss, epoch)
@@ -138,4 +138,6 @@ with torch.no_grad():
     hd = np.sum(prd==te)
     acc = (hd/te.shape[0])
 
-    print('test_acc:{:.4f}'.format(acc)) 
+    print('\n=========================')
+    print('test_acc >> {:.4f}'.format(acc)) 
+    print('=========================')
