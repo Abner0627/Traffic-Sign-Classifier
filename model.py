@@ -58,10 +58,60 @@ class CNN_01(nn.Module):
         pred = self.FC(y3)
         return pred, ch_atm
 
+class resnet_block(nn.Module):
+    def __init__(self, in_dim, outdim, cv_1x1=False):
+        super(resnet_block, self).__init__()
+        self.F = nn.Sequential(
+            nn.Conv2d(in_dim, outdim, kernel_size=3, padding=1),
+            nn.BatchNorm2d(outdim),
+            nn.ReLU(),
+            nn.Conv2d(outdim, outdim, kernel_size=3, padding=1),
+            nn.BatchNorm2d(outdim),
+            )
+        if cv_1x1:
+            self.cv1 = nn.Conv2d(in_dim, outdim, kernel_size=1)
+        else:
+            self.cv1 = None
+    def forward(self, x):
+        y1 = self.F(x)
+        if self.cv1:
+            y2 = self.cv1(x)
+        else:
+            y2 = x
+        out = torch.nn.functional.relu(y1+y2)
+        return out
+
+class ResNet18(nn.Module):
+    def __init__(self):
+        super(ResNet18, self).__init__()
+        self.cvrgb = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(32),
+            nn.MaxPool2d(2)
+        )
+        self.cvgray = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(32),
+            nn.MaxPool2d(2)
+        )
+        self.bk1 = resnet_block(64, 64)
+        self.bk2 = resnet_block(64, 128)
+        self.bk3 = resnet_block(128, 256, cv_1x1=True)
+        self.bk4 = resnet_block(256, 512)
+    def forward(self, rgb, gray):
+        y1_rgb = self.cvrgb(rgb)
+        y1_gray = self.cvgray(gray)
+        y1 = torch.cat((y1_rgb, y1_gray), dim=1)
+        print(y1.size())
+        y2 = self.bk1(y1)
+        return rgb
+
+
+
 #%% Test
 if __name__ == "__main__":
     x = torch.rand(32, 3, 32, 32)
-    F = CNN_01()
-    y, at = F(x)
+    x2 = torch.rand(32, 1, 32, 32)
+    F = ResNet18()
+    y = F(x, x2)
     print(y.size())
-    print(at.size())
