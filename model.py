@@ -95,8 +95,10 @@ class ResNet18(nn.Module):
             nn.MaxPool2d(2)
         )
         self.bk1 = resnet_block(64, 64)
+        self.bk1_2 = resnet_block(64, 64)
         self.bk2 = resnet_block(64, 128, cv_1x1=True)
         self.bk3 = resnet_block(128, 128)
+        self.bk3_2 = resnet_block(128, 128)
         self.pool = nn.AdaptiveAvgPool2d(1)
 
         self.FC = nn.Sequential(
@@ -109,9 +111,9 @@ class ResNet18(nn.Module):
         y1_rgb = self.cvrgb(rgb)
         y1_gray = self.cvgray(gray)
         y1 = torch.cat((y1_rgb, y1_gray), dim=1)
-        y2 = self.bk1(y1)
+        y2 = self.bk1_2(self.bk1(y1))
         y3 = self.bk2(y2)
-        y4 = self.bk3(y3)
+        y4 = self.bk3_2(self.bk3(y3))
         y5 = self.pool(y4)
         pred = self.FC(y5)
         return pred

@@ -5,6 +5,7 @@ import func
 import config
 import model
 import matplotlib.pyplot as plt
+import random
 
 import torch
 import torch.optim as optim
@@ -40,6 +41,15 @@ tesImg = np.concatenate((tesRGB, tesGray), axis=1)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 writer = SummaryWriter()
+
+def setup_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+
+setup_seed(25)
 
 #%% Parameters
 bz = config.batch
