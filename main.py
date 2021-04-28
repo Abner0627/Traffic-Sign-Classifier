@@ -24,7 +24,22 @@ with open(os.path.join(dpath, valF), 'rb') as f:
 with open(os.path.join(dpath, tesF), 'rb') as f:
     tesD = pickle.load(f)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
+# Img
+traRGB = traD['features'].transpose(0,3,1,2)
+valRGB = valD['features'].transpose(0,3,1,2)
+tesRGB = tesD['features'].transpose(0,3,1,2)
+
+traGray = func._gray(traRGB)
+valGray = func._gray(valRGB)
+tesGray = func._gray(tesRGB)
+
+traImg = np.concatenate((traRGB, traGray), axis=1)
+valImg = np.concatenate((valRGB, valGray), axis=1)
+tesImg = np.concatenate((tesRGB, tesGray), axis=1)
+
+exit()
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
 
 #%% Parameters
 bz = config.batch
@@ -36,9 +51,9 @@ model.to(device)
 loss_func.to(device)
 
 #%% Pack
-tra_data = torch.from_numpy(func._norm(traD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
-tes_data = torch.from_numpy(func._norm(tesD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
-val_data = torch.from_numpy(func._norm(valD['features'].transpose(0,3,1,2))).type(torch.FloatTensor)
+tra_data = torch.from_numpy(func._norm(traImg)).type(torch.FloatTensor)
+tes_data = torch.from_numpy(func._norm(tesImg)).type(torch.FloatTensor)
+val_data = torch.from_numpy(func._norm(valImg)).type(torch.FloatTensor)
 
 tra_label = torch.from_numpy(traD['labels']).type(torch.FloatTensor)
 tes_label = torch.from_numpy(tesD['labels']).type(torch.FloatTensor)
@@ -57,12 +72,8 @@ for epoch in range(config.Epoch):
     model.train()
     for ntra, (Data, Label) in enumerate(tra_dataloader):
         optim_m.zero_grad()
-        # print(Data.size())
-        # plt.imshow(Data.data.numpy()[0,0,:,:])
-        # plt.show()
-        gray = torchvision.transforms.functional.rgb_to_grayscale(Data)
-        data_rgb = Data.to(device)
-        data_gray = gray.to(device)
+        data_rgb = Data[:,:3,:,:].to(device)
+        data_gray = Data[:,-1,:,:].to(device)
         val = Label.type(torch.long).to(device)
         pred = model(data_rgb, data_gray)
         
@@ -73,9 +84,8 @@ for epoch in range(config.Epoch):
     model.eval()
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
-            gray_V = torchvision.transforms.functional.rgb_to_grayscale(Data_V)
-            data_rgb = Data_V.to(device)
-            data_gray = gray_V.to(device)
+            data_rgb = Data_V[:,:3,:,:].to(device)
+            data_gray = Data_V[:,-1,:,:].to(device)
             pred = model(data_rgb, data_gray)
 
             out = pred.cpu().data.numpy()
