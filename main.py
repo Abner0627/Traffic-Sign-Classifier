@@ -73,9 +73,9 @@ for epoch in range(config.Epoch):
     model.eval()
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
-            gray = torchvision.transforms.functional.rgb_to_grayscale(Data)
-            data_rgb = Data.to(device)
-            data_gray = gray.to(device)
+            gray_V = torchvision.transforms.functional.rgb_to_grayscale(Data_V)
+            data_rgb = Data_V.to(device)
+            data_gray = gray_V.to(device)
             pred = model(data_rgb, data_gray)
 
             out = pred.cpu().data.numpy()
