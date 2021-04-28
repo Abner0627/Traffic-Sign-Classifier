@@ -27,7 +27,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 #%% Parameters
 bz = config.batch
-model = model.CNN_01()
+model = model.ResNet18()
 optim_m = optim.Adam(model.parameters(), lr=config.lr)
 loss_func = nn.CrossEntropyLoss()
 
