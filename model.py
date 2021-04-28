@@ -85,26 +85,37 @@ class ResNet18(nn.Module):
     def __init__(self):
         super(ResNet18, self).__init__()
         self.cvrgb = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=7, stride=2, padding=3),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(64),
             nn.MaxPool2d(2)
         )
         self.cvgray = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=7, stride=2, padding=3),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(64),
             nn.MaxPool2d(2)
         )
-        self.bk1 = resnet_block(64, 64)
-        self.bk2 = resnet_block(64, 128)
-        self.bk3 = resnet_block(128, 256, cv_1x1=True)
-        self.bk4 = resnet_block(256, 512)
+        self.bk1 = resnet_block(128, 128)
+        self.bk2 = resnet_block(128, 256, cv_1x1=True)
+        self.bk3 = resnet_block(256, 256)
+        self.pool = nn.AdaptiveAvgPool2d(1)
+
+        self.FC = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(256, 64),
+            nn.ReLU(),
+            nn.Linear(64, 43),
+            nn.Softmax(-1)
+        )
     def forward(self, rgb, gray):
         y1_rgb = self.cvrgb(rgb)
         y1_gray = self.cvgray(gray)
         y1 = torch.cat((y1_rgb, y1_gray), dim=1)
-        print(y1.size())
         y2 = self.bk1(y1)
-        return rgb
+        y3 = self.bk2(y2)
+        y4 = self.bk3(y3)
+        y5 = self.pool(y4)
+        pred = self.FC(y5)
+        return pred
 
 
 
