@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.optim as optim
 import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
 
 #%% Load
 dpath = './traffic-signs-data'
@@ -38,11 +39,12 @@ tesImg = np.concatenate((tesRGB, tesGray), axis=1)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
+writer = SummaryWriter()
 
 #%% Parameters
 bz = config.batch
 model = model.ResNet18()
-optim_m = optim.Adam(model.parameters(), lr=config.lr)
+optim_m = optim.Adam(model.parameters(), lr=config.lr, amsgrad=config.amsgrad)
 loss_func = nn.CrossEntropyLoss()
 
 model = model.to(device)
@@ -100,7 +102,11 @@ for epoch in range(config.Epoch):
         acc = (hd/va.shape[0])
 
         print('epoch[{}], loss:{:.4f}, val_acc:{:.4f}'
-                .format(epoch+1, loss.item(), acc))  
+                .format(epoch+1, loss.item(), acc)) 
+
+        writer.add_scalar("Loss", loss, epoch)
+        writer.add_scalar("Val_acc", acc, epoch)
+        writer.flush()                 
 
 #%% Test
 model.eval()
@@ -113,13 +119,13 @@ with torch.no_grad():
 
         out = pred.cpu().data.numpy()
         pr  = np.argmax(out, axis=1)
-        if nval==0:
+        if ntes==0:
             prd = pr
         else:
             prd = np.concatenate((prd, pr))
 
     te = tesD['labels']
     hd = np.sum(prd==te)
-    acc = (hd/va.shape[0])
+    acc = (hd/te.shape[0])
 
     print('test_acc:{:.4f}'.format(acc)) 
