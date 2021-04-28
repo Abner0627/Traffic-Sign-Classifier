@@ -7,6 +7,7 @@ import model
 import matplotlib.pyplot as plt
 
 import torch
+import torchvision
 import torch.optim as optim
 import torch.nn as nn
 
@@ -56,10 +57,14 @@ for epoch in range(config.Epoch):
     model.train()
     for ntra, (Data, Label) in enumerate(tra_dataloader):
         optim_m.zero_grad()
-
-        data = Data.to(device)
+        # print(Data.size())
+        # plt.imshow(Data.data.numpy()[0,0,:,:])
+        # plt.show()
+        gray = torchvision.transforms.functional.rgb_to_grayscale(Data)
+        data_rgb = Data.to(device)
+        data_gray = gray.to(device)
         val = Label.type(torch.long).to(device)
-        pred, _ = model(data)
+        pred = model(data_rgb, data_gray)
         
         loss = loss_func(pred, val)
         loss.backward()
@@ -68,8 +73,10 @@ for epoch in range(config.Epoch):
     model.eval()
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
-            data = Data_V.to(device)
-            pred, _ = model(data)
+            gray = torchvision.transforms.functional.rgb_to_grayscale(Data)
+            data_rgb = Data.to(device)
+            data_gray = gray.to(device)
+            pred = model(data_rgb, data_gray)
 
             out = pred.cpu().data.numpy()
             pr  = np.argmax(out, axis=1)
