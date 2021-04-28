@@ -85,23 +85,23 @@ class ResNet18(nn.Module):
     def __init__(self):
         super(ResNet18, self).__init__()
         self.cvrgb = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(3, 32, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(32),
             nn.MaxPool2d(2)
         )
         self.cvgray = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(1, 32, kernel_size=7, stride=2, padding=3),
+            nn.BatchNorm2d(32),
             nn.MaxPool2d(2)
         )
-        self.bk1 = resnet_block(128, 128)
-        self.bk2 = resnet_block(128, 256, cv_1x1=True)
-        self.bk3 = resnet_block(256, 256)
+        self.bk1 = resnet_block(64, 64)
+        self.bk2 = resnet_block(64, 128, cv_1x1=True)
+        self.bk3 = resnet_block(128, 128)
         self.pool = nn.AdaptiveAvgPool2d(1)
 
         self.FC = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(256, 64),
+            nn.Linear(128, 64),
             nn.ReLU(),
             nn.Linear(64, 43),
             nn.Softmax(-1)
