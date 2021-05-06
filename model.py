@@ -78,8 +78,6 @@ class resnet_block(nn.Module):
             y2 = self.cv1(x)
         else:
             y2 = x
-        print(y1.size())
-        print(y2.size())
         out = torch.nn.functional.relu(y1+y2)
         return out
 
