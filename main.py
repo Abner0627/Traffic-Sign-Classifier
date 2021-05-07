@@ -109,7 +109,7 @@ for epoch in range(config.Epoch):
         va = valD['labels']
         hd = np.sum(prd==va)
         acc = (hd/va.shape[0])
-        loss_np = (loss.item()).cpu().data.numpy()
+        loss_np = loss.item()
         print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
                 .format(epoch+1, loss_np, acc)) 
 
