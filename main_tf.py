@@ -11,8 +11,8 @@ import random
 import func
 import model_tf
 from keras import backend as K
-session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
 K.set_session(sess)
 
 def reset_random_seeds():
