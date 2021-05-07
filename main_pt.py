@@ -3,8 +3,7 @@ import os
 import pickle
 import func
 import config
-import model
-import matplotlib.pyplot as plt
+import model_pt
 import random
 
 import torch
@@ -51,7 +50,7 @@ setup_seed(config.seed)
 
 #%% Parameters
 bz = config.batch
-model = model.ResNet18()
+model = model_pt.ResNet18()
 optim_m = optim.Adam(model.parameters(), lr=config.lr, amsgrad=config.amsgrad)
 loss_func = nn.CrossEntropyLoss()
 
