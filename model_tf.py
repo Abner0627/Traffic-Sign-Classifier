@@ -31,12 +31,12 @@ class ResNet18(keras.Model):
     def __init__(self):
         super(ResNet18, self).__init__()
         self.cvrgb = keras.Sequential([
-            keras.layers.Conv2D(32, kernel_size=(7,7), strides=2, padding="same"),
+            keras.layers.Conv2D(32, kernel_size=(7,7), strides=(2,2), padding="same"),
             keras.layers.BatchNormalization(),
             keras.layers.MaxPool2D(2)
         ])
         self.cvgray = keras.Sequential([
-            keras.layers.Conv2D(32, kernel_size=(7,7), strides=2, padding="same"),
+            keras.layers.Conv2D(32, kernel_size=(7,7), strides=(2,2), padding="same"),
             keras.layers.BatchNormalization(),
             keras.layers.MaxPool2D(2)
         ]) 
