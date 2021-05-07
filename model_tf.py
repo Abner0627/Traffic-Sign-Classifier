@@ -45,7 +45,7 @@ class ResNet18(keras.Model):
         self.bk2 = resnet_block(128, cv_1x1=True)
         self.bk3 = resnet_block(128)
         self.bk3_2 = resnet_block(128)    
-        self.pool = keras.layers.GlobalMaxPool2D()  
+        self.pool = keras.layers.GlobalAveragePooling2D()  
 
         self.FC = keras.Sequential([
             keras.layers.Flatten(),
