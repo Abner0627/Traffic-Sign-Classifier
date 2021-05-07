@@ -75,54 +75,55 @@ tra_dataloader = torch.utils.data.DataLoader(dataset = tra_dataset, batch_size=b
 tes_dataloader = torch.utils.data.DataLoader(dataset = tes_dataset, batch_size=bz, shuffle=False)
 val_dataloader = torch.utils.data.DataLoader(dataset = val_dataset, batch_size=bz, shuffle=False)
 
-#%% Training
-for epoch in range(config.Epoch):
-    model.train()
-    for ntra, (Data, Label) in enumerate(tra_dataloader):
-        optim_m.zero_grad()
-        data_rgb = Data[:,:3,:,:].to(device)
-        data_gray = Data[:,-1,:,:].unsqueeze(1)
-        data_gray = data_gray.to(device)
-        val = Label.type(torch.long).to(device)
-        pred = model(data_rgb, data_gray)
+# #%% Training
+# for epoch in range(config.Epoch):
+#     model.train()
+#     for ntra, (Data, Label) in enumerate(tra_dataloader):
+#         optim_m.zero_grad()
+#         data_rgb = Data[:,:3,:,:].to(device)
+#         data_gray = Data[:,-1,:,:].unsqueeze(1)
+#         data_gray = data_gray.to(device)
+#         val = Label.type(torch.long).to(device)
+#         pred = model(data_rgb, data_gray)
         
-        loss = loss_func(pred, val)
-        loss.backward()
-        optim_m.step()
+#         loss = loss_func(pred, val)
+#         loss.backward()
+#         optim_m.step()
     
-    model.eval()
-    L, A = [], []
-    with torch.no_grad():
-        for nval, (Data_V, Label_V) in enumerate(val_dataloader):
-            data_rgb = Data_V[:,:3,:,:].to(device)
-            data_gray = Data_V[:,-1,:,:].unsqueeze(1)
-            data_gray = data_gray.to(device)
-            pred = model(data_rgb, data_gray)
+#     model.eval()
+#     L, A = [], []
+#     with torch.no_grad():
+#         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
+#             data_rgb = Data_V[:,:3,:,:].to(device)
+#             data_gray = Data_V[:,-1,:,:].unsqueeze(1)
+#             data_gray = data_gray.to(device)
+#             pred = model(data_rgb, data_gray)
 
-            out = pred.cpu().data.numpy()
-            pr  = np.argmax(out, axis=1)
-            if nval==0:
-                prd = pr
-            else:
-                prd = np.concatenate((prd, pr))
+#             out = pred.cpu().data.numpy()
+#             pr  = np.argmax(out, axis=1)
+#             if nval==0:
+#                 prd = pr
+#             else:
+#                 prd = np.concatenate((prd, pr))
 
-        va = valD['labels']
-        hd = np.sum(prd==va)
-        acc = (hd/va.shape[0])
-        loss_np = loss.item()
-        print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
-                .format(epoch+1, loss_np, acc)) 
+#         va = valD['labels']
+#         hd = np.sum(prd==va)
+#         acc = (hd/va.shape[0])
+#         loss_np = loss.item()
+#         print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
+#                 .format(epoch+1, loss_np, acc)) 
 
-        L.append(loss_np)
-        A.append(acc)
+#         L.append(loss_np)
+#         A.append(acc)
 
-with open('loss_acc.npy', 'wb') as f:          
-    np.save(f, np.array(L))
-    np.save(f, np.array(A))
+# with open('loss_acc.npy', 'wb') as f:          
+#     np.save(f, np.array(L))
+#     np.save(f, np.array(A))
 
-torch.save(model, 'model_pt.pth')         
+# torch.save(model, 'model_pt.pth')         
 
 #%% Test
+model = torch.load('model_pt.pth')
 model.eval()
 with torch.no_grad():
     for ntes, (Data_E, Label_E) in enumerate(tes_dataloader):
