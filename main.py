@@ -119,7 +119,8 @@ for epoch in range(config.Epoch):
 with open('loss_acc.npy', 'wb') as f:          
     np.save(f, np.array(L))
     np.save(f, np.array(A))
-            
+
+torch.save(model, 'model_pt.pth')         
 
 #%% Test
 model.eval()
