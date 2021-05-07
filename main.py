@@ -47,7 +47,7 @@ def setup_seed(seed):
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
 
-setup_seed(25)
+setup_seed(config.seed)
 
 #%% Parameters
 bz = config.batch
