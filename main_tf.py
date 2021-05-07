@@ -56,18 +56,22 @@ model.compile(optimizer=optim_m,
 history = model.fit(tra_data, tra_label, batch_size=bz,
                     epochs=config.Epoch, verbose=2, shuffle=True,
                     validation_data=(val_data, val_label))
-print(history.history.keys())
 
 loss = np.array(history.history['loss'])
-acc = np.array(history.history['val_accuracy'])
+val_acc = np.array(history.history['val_accuracy'])
 
-# with open('loss_acc_tf.npy', 'wb') as f:          
-#     np.save(f, loss)
-#     np.save(f, acc)
+with open('loss_acc_tf.npy', 'wb') as f:          
+    np.save(f, loss)
+    np.save(f, val_acc)
 
 #%% Test
-pred = model.predict(tes_data)
-pred_pro = keras.activations.softmax(pred)
+pro_model = keras.Sequential([model, keras.layers.Softmax()])
+pred = pro_model.predict(tes_data)
+pro_pred = np.argmax(pred, axis=1)
 
-print(pred_pro.shape)
-print(tes_label.shape)
+hd = np.sum(pro_pred==tes_label)
+acc = (hd/tes_label.shape[0])
+
+print('\n=========================')
+print('test_acc >> {:.4f}'.format(acc)) 
+print('=========================')
