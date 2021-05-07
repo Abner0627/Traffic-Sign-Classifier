@@ -1,19 +1,8 @@
-import config
 import os
-os.environ['PYTHONHASHSEED']=str(config.seed)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorflow.keras as keras
 import numpy as np
-import random
-
-def reset_random_seeds():
-   os.environ['PYTHONHASHSEED']=str(config.seed)
-   tf.random.set_seed(config.seed)
-   np.random.seed(config.seed)
-   random.seed(config.seed)
-
-reset_random_seeds()
 
 class resnet_block(keras.Model):
     def __init__(self, outdim, cv_1x1=False):

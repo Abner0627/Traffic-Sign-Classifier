@@ -3,26 +3,14 @@ import numpy as np
 import config
 import pickle
 import os
-os.environ['PYTHONHASHSEED']=str(config.seed)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.keras as keras
 import tensorflow as tf
 import random
 import func
 import model_tf
-from keras import backend as K
-session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
-K.set_session(sess)
-
-def reset_random_seeds():
-   os.environ['PYTHONHASHSEED']=str(config.seed)
-   tf.random.set_seed(config.seed)
-   np.random.seed(config.seed)
-   random.seed(config.seed)
 
 #%% Load
-reset_random_seeds()
 dpath = './traffic-signs-data'
 traF = 'train.p'
 valF = 'valid.p'
@@ -72,6 +60,8 @@ history = model.fit(tra_data, tra_label, batch_size=bz,
 
 loss = np.array(history.history['loss'])
 val_acc = np.array(history.history['val_accuracy'])
+
+model.save('model_tf.h5')
 
 with open('loss_acc_tf.npy', 'wb') as f:          
     np.save(f, loss)
