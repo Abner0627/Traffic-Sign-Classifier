@@ -6,7 +6,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.keras as keras
 import tensorflow as tf
-import random
 import func
 import model_tf
 
@@ -68,6 +67,7 @@ with open('loss_acc_tf.npy', 'wb') as f:
     np.save(f, val_acc)
 
 #%% Test
+# model = keras.models.load_model('model_tf')
 pro_model = keras.Sequential([model, keras.layers.Softmax()])
 pred = pro_model.predict(tes_data)
 pro_pred = np.argmax(pred, axis=1)
