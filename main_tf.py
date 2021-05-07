@@ -2,14 +2,23 @@
 import numpy as np
 import pickle
 import os
+os.environ['PYTHONHASHSEED']=str(25)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.keras as keras
 import tensorflow as tf
+import random
 import func
 import config
 import model_tf
 
+def reset_random_seeds():
+   os.environ['PYTHONHASHSEED']=str(25)
+   tf.random.set_seed(25)
+   np.random.seed(25)
+   random.seed(25)
+
 #%% Load
+reset_random_seeds()
 dpath = './traffic-signs-data'
 traF = 'train.p'
 valF = 'valid.p'
