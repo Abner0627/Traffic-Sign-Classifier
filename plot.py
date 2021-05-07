@@ -103,7 +103,7 @@ elif args.plot=='2':
     ax.bar(x, sl0, alpha=0.7, label='Sample 0')
     ax.bar(x, sl1, alpha=0.7, label='Sample 1')
     ax.bar(x, sl2, alpha=0.7, label='Sample 2')
-    ax.set_xlim(0, 120)
+    ax.set_xlim(0, 180)
     plt.legend(loc=1)
     plt.tight_layout()
     plt.savefig(os.path.join(sP, sF))    
