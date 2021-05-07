@@ -59,7 +59,7 @@ history = model.fit(tra_data, tra_label, batch_size=bz,
 print(history.history.keys())
 
 loss = np.array(history.history['loss'])
-acc = np.array(history.history['val_acc'])
+acc = np.array(history.history['val_accuracy'])
 
 with open('loss_acc.npy', 'wb') as f:          
     np.save(f, loss)
