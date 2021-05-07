@@ -61,12 +61,12 @@ print(history.history.keys())
 loss = np.array(history.history['loss'])
 acc = np.array(history.history['val_accuracy'])
 
-with open('loss_acc.npy', 'wb') as f:          
-    np.save(f, loss)
-    np.save(f, acc)
+# with open('loss_acc_tf.npy', 'wb') as f:          
+#     np.save(f, loss)
+#     np.save(f, acc)
 
 #%% Test
-pred = model.predict(tes_label)
+pred = model.predict(tes_data)
 pred_pro = keras.activations.softmax(pred)
 
 print(pred_pro.shape)

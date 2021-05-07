@@ -10,7 +10,6 @@ import random
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
 
 #%% Load
 dpath = './traffic-signs-data'
@@ -40,7 +39,6 @@ tesImg = np.concatenate((tesRGB, tesGray), axis=1)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
-writer = SummaryWriter()
 
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -93,6 +91,7 @@ for epoch in range(config.Epoch):
         optim_m.step()
     
     model.eval()
+    L, A = [], []
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
             data_rgb = Data_V[:,:3,:,:].to(device)
@@ -110,13 +109,17 @@ for epoch in range(config.Epoch):
         va = valD['labels']
         hd = np.sum(prd==va)
         acc = (hd/va.shape[0])
-
+        loss_np = (loss.item()).cpu().data.numpy()
         print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
-                .format(epoch+1, loss.item(), acc)) 
+                .format(epoch+1, loss_np, acc)) 
 
-        writer.add_scalar("Loss", loss, epoch)
-        writer.add_scalar("Val_acc", acc, epoch)
-        writer.flush()                 
+        L.append(loss_np)
+        A.append(acc)
+
+with open('loss_acc.npy', 'wb') as f:          
+    np.save(f, np.array(L))
+    np.save(f, np.array(A))
+            
 
 #%% Test
 model.eval()
