@@ -44,28 +44,28 @@ tra_data = tf.image.convert_image_dtype(tra_data, dtype=tf.float16, saturate=Fal
 val_data = tf.image.convert_image_dtype(val_data, dtype=tf.float16, saturate=False)
 tes_data = tf.image.convert_image_dtype(tes_data, dtype=tf.float16, saturate=False)
 
-#%% Parameters
-bz = config.batch
-model = model_tf.ResNet18()
-optim_m = keras.optimizers.Adam(learning_rate=config.lr, amsgrad=config.amsgrad)
+# #%% Parameters
+# bz = config.batch
+# model = model_tf.ResNet18()
+# optim_m = keras.optimizers.Adam(learning_rate=config.lr, amsgrad=config.amsgrad)
 
-#%% Train
-model.compile(optimizer=optim_m, 
-              loss=keras.losses.SparseCategoricalCrossentropy(
-                  from_logits=True), 
-              metrics=['accuracy'])
-history = model.fit(tra_data, tra_label, batch_size=bz,
-                    epochs=config.Epoch, verbose=2, shuffle=True,
-                    validation_data=(val_data, val_label))
+# #%% Train
+# model.compile(optimizer=optim_m, 
+#               loss=keras.losses.SparseCategoricalCrossentropy(
+#                   from_logits=True), 
+#               metrics=['accuracy'])
+# history = model.fit(tra_data, tra_label, batch_size=bz,
+#                     epochs=config.Epoch, verbose=2, shuffle=True,
+#                     validation_data=(val_data, val_label))
 
-loss = np.array(history.history['loss'])
-val_acc = np.array(history.history['val_accuracy'])
+# loss = np.array(history.history['loss'])
+# val_acc = np.array(history.history['val_accuracy'])
 
-model.save(os.path.join(M, 'model_tf'))
+# model.save(os.path.join(M, 'model_tf'))
 
-with open(os.path.join(M, 'loss_acc_tf.npy'), 'wb') as f:          
-    np.save(f, loss)
-    np.save(f, val_acc)
+# with open(os.path.join(M, 'loss_acc_tf.npy'), 'wb') as f:          
+#     np.save(f, loss)
+#     np.save(f, val_acc)
 
 #%% Test
 model = keras.models.load_model(os.path.join(M, 'model_tf'))

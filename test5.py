@@ -20,6 +20,7 @@ M = './model'
 args = _config()
 sP = './test_img/result'
 data_list = os.listdir(P)
+real_idx_L = [12, 13, 28, 32, 8]
 tot = []
 for i in range(5):
     imgs = (cv2.imread(os.path.join(P, data_list[0])))[np.newaxis,...]
@@ -38,8 +39,7 @@ if args.T:
     tesD = np.reshape(tesD, (-1,32,32,4))
     tesD = tf.image.convert_image_dtype(tesD, dtype=tf.float16, saturate=False)
     model = keras.models.load_model(os.path.join(M, 'model_tf'))
-    pro_model = keras.Sequential([model, keras.layers.Softmax()])
-    pred = pro_model.predict(tesD)
+    pred = model.predict(tesD)
     np.save(os.path.join(sP, 'Pred_tf.npy'), pred)
     print(pred.shape)
 
@@ -50,7 +50,7 @@ elif args.P:
     model.cpu()
     tesD = torch.from_numpy(tesD).type(torch.FloatTensor)
     RGB, GRAY = tesD[:,:3,:,:], tesD[:,-1,:,:].unsqueeze(1)
-    pred = torch.nn.functional.softmax(model(RGB, GRAY), dim=-1)
+    pred = model(RGB, GRAY)
     pred = pred.data.numpy()
     np.save(os.path.join(sP, 'Pred_pt.npy'), pred)
     print(pred.shape)
@@ -60,9 +60,21 @@ else:
     imgT = np.reshape(img, (5,32,32,-1))
     pt = np.load(os.path.join(sP, 'Pred_pt.npy'))
     tf = np.load(os.path.join(sP, 'Pred_tf.npy'))
-    sign = np.array(pd.read_csv(os.path.join(P2, 'signnames.csv'), header=None))[1:,1]
+    print(pt.shape)
+    for i in range(5):
+        print(np.argmax(tf, axis=1))
+    sign = np.array(pd.read_csv(os.path.join(P2, 'signnames.csv'), header=None))[1:,:]
     barx = np.arange(43)
     fig, ax = plt.subplots(5,2, figsize=(25,10))
+    pred_idx = np.argmax(pt[0,...])
+    pred_name = sign[pred_idx, 1]
+    real_idx = real_idx_L[0]
+    real_name = sign[real_idx, 1]
+    print(real_name)
+    print(pred_name)
+    # real_name = 
+
     ax[0,0].imshow(cv2.cvtColor(imgT[0,...], cv2.COLOR_BGR2RGB))
+
     ax[0,1].bar(barx, pt[0,...])
-    plt.show()
+    # plt.show()
