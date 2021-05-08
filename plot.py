@@ -24,7 +24,7 @@ traF = 'train.p'
 valF = 'valid.p'
 tesF = 'test.p'
 sP = './img'
-M = '.model'
+M = './model'
 args = _config()
 
 with open(os.path.join(dpath, traF), 'rb') as f:

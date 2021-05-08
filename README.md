@@ -109,7 +109,7 @@ RGB有3個channel而灰階圖片則有1個channel。\
 畫成折線圖後如下，以使用的框架分成`model_pt`與`model_tf`：
 
 <img src=https://i.imgur.com/YULaote.png>
-<img src=https://i.imgur.com/asYvhWH.png>
+<img src=https://i.imgur.com/CVhWgWs.png>
 
 
 ### 程式碼註解
