@@ -153,4 +153,15 @@ elif args.plot=='4':
     plt.savefig(os.path.join(sP, sF))    
     # plt.show() 
 
+elif args.plot=='5':
+    with open('loss_acc_pt.npy', 'rb') as f:          
+        L = np.load(f, allow_pickle=True)
+        A = np.load(f)
+    fig, ax = plt.subplots(1, 2, figsize=(8,5))
+    ax[0].plot(L)
+    ax[1].plot(A)
+    plt.tight_layout()
+    # plt.savefig(os.path.join(sP, sF))    
+    plt.show() 
+
 

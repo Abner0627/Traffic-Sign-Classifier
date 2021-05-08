@@ -1,8 +1,8 @@
 # 自動駕駛實務 交通號誌辨識<br />Traffic-Sign-Classifier
 
-## Github
+## Github Repository
 
-[<img src=https://i.imgur.com/3aZfqpy.png width=15%>](https://github.com/Abner0627/Traffic-Sign-Classifier)
+[<img src=https://i.imgur.com/3aZfqpy.png width=25%>](https://github.com/Abner0627/Traffic-Sign-Classifier)
 
 ## 作業目標
 
@@ -66,6 +66,44 @@ python 3.8.5
 
 ### 模型介紹
 
-本次作業使用2015年於《Deep Residual Learning for Image Recognition》提出的深度殘差網路，ResNet。
+本次作業使用2015年於提出的深度殘差網路，ResNet$^{[1]}$。\
+為求節省訓練時間及減少overfitting的影響，\
+此處精簡了原網路架構改以13層進行訓練。\
+\
+於原論文中提到，加深後的神經網路有時表現反而會不如淺層網路，\
+也就是說隨著架構變深，擷取出的特徵不一定會變好，\
+故作者採用殘差連接的方式，在擷取特徵的同時也能保留輸入的原特徵。\
+\
+此處選用的ResNet是由多個ResNet block組成，主要有下列兩類：
+
+<img src=https://i.imgur.com/QQtKxK0.png>
+
+與左側相比，右側在進行殘差連接的時候，\
+另使用1x1的convolution進行擷取。\
+完整的模型架構如下，主要是基於ResNet-12進行修改，\
+為使RGB與灰階圖的特徵分開擷取，之後再將特徵串接，\
+故再增加一層convolution，總計有13層。
+
+<img src=https://i.imgur.com/nCA9B3A.png>
+
+此外這次作業也分別利用pytorch與keras實現上述模型架構，\
+詳見`model_pt.py`與`model_tf.py`。
+
+### 訓練細節
+
+本次作業首先對各張圖片的每個channel進行特徵縮放，\
+RGB有3個channel而灰階圖片則有1個channel。\
+\
+為使模型快速收斂，並減少調整參數的麻煩程度，\
+故選用Adam當作optimizer。\
+然而隨著訓練時間增加gradient也會縮小，\
+但此時Adam反而會受到小的gradient影響，使測試時的表現不佳；\
+因此這裡採用2018年提出的改良版本，AMSGrad$^{[2]}$，以減緩該問題。\
+\
+各訓練參數如下表所示：
+| Batch size | Learning rate | Epoch |
+|------------|---------------|-------|
+| 32         | 0.001         | 20    |
+
 
 ### 程式碼註解
