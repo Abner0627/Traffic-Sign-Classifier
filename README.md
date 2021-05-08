@@ -66,4 +66,6 @@ python 3.8.5
 
 ### 模型介紹
 
+本次作業使用2015年於《Deep Residual Learning for Image Recognition》提出的深度殘差網路，ResNet。
+
 ### 程式碼註解
