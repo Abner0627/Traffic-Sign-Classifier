@@ -75,6 +75,7 @@ tes_dataloader = torch.utils.data.DataLoader(dataset = tes_dataset, batch_size=b
 val_dataloader = torch.utils.data.DataLoader(dataset = val_dataset, batch_size=bz, shuffle=False)
 
 #%% Training
+L, A = [], []
 for epoch in range(config.Epoch):
     model.train()
     for ntra, (Data, Label) in enumerate(tra_dataloader):
@@ -90,7 +91,7 @@ for epoch in range(config.Epoch):
         optim_m.step()
     
     model.eval()
-    L, A = [], []
+
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
             data_rgb = Data_V[:,:3,:,:].to(device)
@@ -115,7 +116,7 @@ for epoch in range(config.Epoch):
         L.append(loss_np)
         A.append(acc)
 
-with open('loss_acc.npy', 'wb') as f:          
+with open('loss_acc_pt.npy', 'wb') as f:          
     np.save(f, np.array(L))
     np.save(f, np.array(A))
 
