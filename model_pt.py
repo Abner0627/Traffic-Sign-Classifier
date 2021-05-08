@@ -87,12 +87,12 @@ class ResNet18(nn.Module):
         self.cvrgb = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=7, stride=2, padding=3),
             nn.BatchNorm2d(32),
-            nn.MaxPool2d(3)
+            nn.MaxPool2d(2)
         )
         self.cvgray = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=7, stride=2, padding=3),
             nn.BatchNorm2d(32),
-            nn.MaxPool2d(3)
+            nn.MaxPool2d(2)
         )
         self.bk1 = resnet_block(64, 64)
         self.bk1_2 = resnet_block(64, 64)

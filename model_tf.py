@@ -33,12 +33,12 @@ class ResNet18(keras.Model):
         self.cvrgb = keras.Sequential([
             keras.layers.Conv2D(32, kernel_size=(7,7), strides=(2,2), padding="same"),
             keras.layers.BatchNormalization(),
-            keras.layers.MaxPool2D(3)
+            keras.layers.MaxPool2D(2)
         ])
         self.cvgray = keras.Sequential([
             keras.layers.Conv2D(32, kernel_size=(7,7), strides=(2,2), padding="same"),
             keras.layers.BatchNormalization(),
-            keras.layers.MaxPool2D(3)
+            keras.layers.MaxPool2D(2)
         ]) 
         self.bk1 = resnet_block(64)
         self.bk1_2 = resnet_block(64)
