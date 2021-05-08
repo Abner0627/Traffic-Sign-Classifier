@@ -36,7 +36,7 @@ tesD = np.concatenate((img_RGB, img_Gray), axis=1)
 if args.T:
     import tensorflow.keras as keras
     import tensorflow as tf
-    tesD = np.reshape(tesD, (-1,32,32,4))
+    tesD = tesD.transpose(0,2,3,1)
     tesD = tf.image.convert_image_dtype(tesD, dtype=tf.float16, saturate=False)
     model = keras.models.load_model(os.path.join(M, 'model_tf'))
     pred = model.predict(tesD)
