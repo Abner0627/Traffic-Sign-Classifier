@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import cv2
@@ -14,6 +15,7 @@ def _config():
 
 #%%
 P = './test_img'
+P2 = './traffic-signs-data'
 M = './model'
 args = _config()
 sP = './test_img/result'
@@ -55,5 +57,12 @@ elif args.P:
 
 else:
     import matplotlib.pyplot as plt
+    imgT = np.reshape(img, (5,32,32,-1))
     pt = np.load(os.path.join(sP, 'Pred_pt.npy'))
-    pt = np.load(os.path.join(sP, 'Pred_pt.npy'))
+    tf = np.load(os.path.join(sP, 'Pred_tf.npy'))
+    sign = np.array(pd.read_csv(os.path.join(P2, 'signnames.csv'), header=None))[1:,1]
+    barx = np.arange(43)
+    fig, ax = plt.subplots(5,2, figsize=(25,10))
+    ax[0,0].imshow(cv2.cvtColor(imgT[0,...], cv2.COLOR_BGR2RGB))
+    ax[0,1].bar(barx, pt[0,...])
+    plt.show()
