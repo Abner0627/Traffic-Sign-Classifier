@@ -105,5 +105,11 @@ RGB有3個channel而灰階圖片則有1個channel。\
 |------------|---------------|-------|
 | 32         | 0.001         | 20    |
 
+另外訓練時每個epoch的loss與跟驗證集的準確度，＼
+畫成折線圖後如下，以使用的框架分成`model_pt`與`model_tf`：
+
+<img src=https://i.imgur.com/YULaote.png>
+<img src=https://i.imgur.com/asYvhWH.png>
+
 
 ### 程式碼註解

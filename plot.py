@@ -154,14 +154,37 @@ elif args.plot=='4':
     # plt.show() 
 
 elif args.plot=='5':
+    sF = 'img_' + str(args.plot) + '.png'
     with open('loss_acc_pt.npy', 'rb') as f:          
-        L = np.load(f, allow_pickle=True)
+        L = np.load(f)
         A = np.load(f)
-    fig, ax = plt.subplots(1, 2, figsize=(8,5))
-    ax[0].plot(L)
-    ax[1].plot(A)
+    fig, ax = plt.subplots(1, 2, figsize=(10,5))
+    fig.suptitle("model_pt", fontsize="x-large")
+    ax[0].plot(L, color='dodgerblue')
+    ax[0].set_title('Loss')
+    ax[0].set_xlabel('Epoch')
+    ax[1].plot(A, color='darkorange')
+    ax[1].set_title('Accuracy')
+    ax[1].set_xlabel('Epoch')
     plt.tight_layout()
-    # plt.savefig(os.path.join(sP, sF))    
-    plt.show() 
+    plt.savefig(os.path.join(sP, sF))    
+    # plt.show() 
+
+elif args.plot=='6':
+    sF = 'img_' + str(args.plot) + '.png'
+    with open('loss_acc_tf.npy', 'rb') as f:          
+        L = np.load(f)
+        A = np.load(f)
+    fig, ax = plt.subplots(1, 2, figsize=(10,5))
+    fig.suptitle("model_tf", fontsize="x-large")
+    ax[0].plot(L, color='dodgerblue')
+    ax[0].set_title('Loss')
+    ax[0].set_xlabel('Epoch')
+    ax[1].plot(A, color='darkorange')
+    ax[1].set_title('Accuracy')
+    ax[1].set_xlabel('Epoch')
+    plt.tight_layout()
+    plt.savefig(os.path.join(sP, sF))    
+    # plt.show()     
 
 
