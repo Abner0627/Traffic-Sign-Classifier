@@ -14,6 +14,7 @@ dpath = './traffic-signs-data'
 traF = 'train.p'
 valF = 'valid.p'
 tesF = 'test.p'
+M = './model'
 
 with open(os.path.join(dpath, traF), 'rb') as f:
     traD = pickle.load(f)
@@ -60,14 +61,14 @@ history = model.fit(tra_data, tra_label, batch_size=bz,
 loss = np.array(history.history['loss'])
 val_acc = np.array(history.history['val_accuracy'])
 
-model.save('model_tf')
+model.save(os.path.join(M, 'model_tf'))
 
-with open('loss_acc_tf.npy', 'wb') as f:          
+with open(os.path.join(M, 'loss_acc_tf.npy'), 'wb') as f:          
     np.save(f, loss)
     np.save(f, val_acc)
 
 #%% Test
-# model = keras.models.load_model('model_tf')
+model = keras.models.load_model(os.path.join(M, 'model_tf'))
 pro_model = keras.Sequential([model, keras.layers.Softmax()])
 pred = pro_model.predict(tes_data)
 pro_pred = np.argmax(pred, axis=1)

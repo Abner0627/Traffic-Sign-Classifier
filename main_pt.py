@@ -15,6 +15,7 @@ dpath = './traffic-signs-data'
 traF = 'train.p'
 valF = 'valid.p'
 tesF = 'test.p'
+M = './model'
 
 with open(os.path.join(dpath, traF), 'rb') as f:
     traD = pickle.load(f)
@@ -116,14 +117,14 @@ for epoch in range(config.Epoch):
         L.append(loss_np)
         A.append(acc)
 
-with open('loss_acc_pt.npy', 'wb') as f:          
+with open(os.path.join(M, 'loss_acc_pt.npy'), 'wb') as f:          
     np.save(f, np.array(L))
     np.save(f, np.array(A))
 
-torch.save(model, 'model_pt.pth')         
+torch.save(model, os.path.join(M, 'model_pt.pth'))         
 
 #%% Test
-model = torch.load('model_pt.pth')
+model = torch.load(os.path.join(M, 'model_pt.pth'))
 model.eval()
 with torch.no_grad():
     for ntes, (Data_E, Label_E) in enumerate(tes_dataloader):

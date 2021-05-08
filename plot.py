@@ -24,6 +24,7 @@ traF = 'train.p'
 valF = 'valid.p'
 tesF = 'test.p'
 sP = './img'
+M = '.model'
 args = _config()
 
 with open(os.path.join(dpath, traF), 'rb') as f:
@@ -155,7 +156,7 @@ elif args.plot=='4':
 
 elif args.plot=='5':
     sF = 'img_' + str(args.plot) + '.png'
-    with open('loss_acc_pt.npy', 'rb') as f:          
+    with open(os.path.join(M, 'loss_acc_pt.npy'), 'rb') as f:          
         L = np.load(f)
         A = np.load(f)
     fig, ax = plt.subplots(1, 2, figsize=(10,5))
@@ -172,7 +173,7 @@ elif args.plot=='5':
 
 elif args.plot=='6':
     sF = 'img_' + str(args.plot) + '.png'
-    with open('loss_acc_tf.npy', 'rb') as f:          
+    with open(os.path.join(M, 'loss_acc_tf.npy'), 'rb') as f:          
         L = np.load(f)
         A = np.load(f)
     fig, ax = plt.subplots(1, 2, figsize=(10,5))
