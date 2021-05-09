@@ -3,15 +3,18 @@ import numpy as np
 
 def _norm(x, Z=True):
     x_n = np.zeros_like(x)
-    for i in range(x.shape[1]):
-        x_mu = np.mean(x[:,i,:,:], axis=0)
-        if Z:
-            x_std = np.std(x[:,i,:,:], axis=0)
-            x_n[:,i,:,:] = (x[:,i,:,:]-x_mu)/x_std
-        else:
-            x_min = np.min(x[:,i,:,:], axis=0)
-            x_max = np.max(x[:,i,:,:], axis=0)
-            x_n[:,i,:,:] = (x[:,i,:,:]-x_mu)/(x_max-x_min)
+    for n in range(x.shape[0]):
+        xs = x[n,...]
+        for i in range(xs.shape[0]):
+            xss = xs[i,:,:]
+            x_mu = np.mean(xss)
+            if Z:
+                x_std = np.std(xss)
+                x_n[n,i,:,:] = (xss-x_mu)/x_std
+            else:
+                x_min = np.min(xss)
+                x_max = np.max(xss)
+                x_n[n,i,:,:] = (xss-x_mu)/(x_max-x_min)
     return x_n
 
 def _gray(x):
@@ -27,6 +30,6 @@ def _gray(x):
 #%% Test
 if __name__ == "__main__":
     x = np.random.rand(2,3,32,32)
-    y = _gray(x)
+    y = _norm(x)
     print(y.shape)
 
