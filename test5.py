@@ -23,23 +23,24 @@ sP = './test_img/result'
 data_list = os.listdir(P)
 tot = []
 data_list = data_list[:-1]
-print(data_list)
+# print(data_list)
 for i in range(len(data_list)):
     imgs = (cv2.imread(os.path.join(P, data_list[i])))[np.newaxis,...]
+    print(data_list[i])
     tot.append(imgs)
+
 
 img = np.vstack(np.array(tot))
 img_RGB = img.transpose(0,3,1,2)
 img_Gray = func._gray(img_RGB)
 
-tesD = np.concatenate((img_RGB, img_Gray), axis=1)
-
+tesD = func._norm(np.concatenate((img_RGB, img_Gray), axis=1))
+print(tesD.shape)
 #%% TF
 if args.T:
     import tensorflow.keras as keras
     import tensorflow as tf
     tesD = tesD.transpose(0,2,3,1)
-    print(tesD.shape)
     tesD = tf.image.convert_image_dtype(tesD, dtype=tf.float16, saturate=False)
     model = keras.models.load_model(os.path.join(M, 'model_tf'))
     pro_model = keras.Sequential([model, keras.layers.Softmax()])
@@ -63,16 +64,10 @@ elif args.P:
 else:
     pt = np.load(os.path.join(sP, 'Pred_pt.npy'))
     tf = np.load(os.path.join(sP, 'Pred_tf.npy'))
-    print(img.shape)
     print(np.argmax(pt, axis=1))
     print(np.argmax(tf, axis=1))
-    sign = np.array(pd.read_csv(os.path.join(P2, 'signnames.csv'), header=None))[1:,:]
     barx = np.arange(43)
     fig, ax = plt.subplots(5,2, figsize=(25,10))
-    pred_idx = np.argmax(pt[0,...])
-    pred_name = sign[pred_idx, 1]
-    real_idx = real_idx_L[0]
-    real_name = sign[real_idx, 1]
 
     ax[0,0].imshow(cv2.cvtColor(img[0,...], cv2.COLOR_BGR2RGB))
 

@@ -32,9 +32,9 @@ traGray = func._gray(traRGB)
 valGray = func._gray(valRGB)
 tesGray = func._gray(tesRGB)
 
-tra_data = np.concatenate((traRGB, traGray), axis=1).transpose(0,2,3,1)
-val_data = np.concatenate((valRGB, valGray), axis=1).transpose(0,2,3,1)
-tes_data = np.concatenate((tesRGB, tesGray), axis=1).transpose(0,2,3,1)
+tra_data = func._norm(np.concatenate((traRGB, traGray), axis=1)).transpose(0,2,3,1)
+val_data = func._norm(np.concatenate((valRGB, valGray), axis=1)).transpose(0,2,3,1)
+tes_data = func._norm(np.concatenate((tesRGB, tesGray), axis=1)).transpose(0,2,3,1)
 
 tra_label = traD['labels']
 val_label = valD['labels']
