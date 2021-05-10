@@ -44,7 +44,6 @@ def setup_seed(seed):
 setup_seed(config.seed)
 
 #%% Parameters
-bz = config.batch
 model = model_pt.ResNet18()
 optim_m = optim.Adam(model.parameters(), lr=config.lr, amsgrad=config.amsgrad)
 loss_func = nn.CrossEntropyLoss()
@@ -62,8 +61,8 @@ val_label = torch.from_numpy(valD['labels']).type(torch.FloatTensor)
 tra_dataset = torch.utils.data.TensorDataset(tra_data, tra_label)
 val_dataset = torch.utils.data.TensorDataset(val_data, val_label)
 
-tra_dataloader = torch.utils.data.DataLoader(dataset = tra_dataset, batch_size=bz, shuffle=True)
-val_dataloader = torch.utils.data.DataLoader(dataset = val_dataset, batch_size=bz, shuffle=False)
+tra_dataloader = torch.utils.data.DataLoader(dataset = tra_dataset, batch_size=config.batch, shuffle=True)
+val_dataloader = torch.utils.data.DataLoader(dataset = val_dataset, batch_size=config.batch, shuffle=False)
 
 #%% Training
 L, A = [], []
