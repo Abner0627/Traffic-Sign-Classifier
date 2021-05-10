@@ -141,7 +141,7 @@ Keras
 ### 程式碼註解
 分作pytorch以及keras進行說明，各參數詳見`config.py`。
 
-**1. Pytorch**
+**1. Pytorch**\
 **(1) 讀取檔案與前處理**
 ```py
 # 檔案路徑與檔名
@@ -229,7 +229,6 @@ for epoch in range(config.Epoch):
 pytorch是以`(batch size, channel, H, W)`的方式排列；\
 此點與keras`(batch size, H, W, channel)`的形式不同。
 
-
 **(4) 模型驗證**
 ```py
 # 將模型切換為評估模式
@@ -260,7 +259,7 @@ with torch.no_grad():
     A.append(acc)
 ```
 另一方面，為提供除loss外評估模型的方式，\
-故在每個epoch訓練完後，再切換為驗證模式與驗證集計算準確度。\
+故在每個epoch訓練完後，再切換為驗證模式與驗證集計算準確度。
 
 **(5) 測試模型 (test_01.py)**
 ```py
@@ -314,7 +313,7 @@ with torch.no_grad():
 ```
 基本上與驗證時大同小異。\
 \
-**2. Keras**
+**2. Keras**\
 **(1) 讀取檔案與前處理**
 ```py
 #%% Load
