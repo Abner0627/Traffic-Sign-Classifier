@@ -14,28 +14,22 @@ import torch.nn as nn
 dpath = './traffic-signs-data'
 traF = 'train.p'
 valF = 'valid.p'
-tesF = 'test.p'
 M = './model'
 
 with open(os.path.join(dpath, traF), 'rb') as f:
     traD = pickle.load(f)
 with open(os.path.join(dpath, valF), 'rb') as f:
     valD = pickle.load(f)
-with open(os.path.join(dpath, tesF), 'rb') as f:
-    tesD = pickle.load(f)
 
 # Img
 traRGB = traD['features'].transpose(0,3,1,2)
 valRGB = valD['features'].transpose(0,3,1,2)
-tesRGB = tesD['features'].transpose(0,3,1,2)
 
 traGray = func._gray(traRGB)
 valGray = func._gray(valRGB)
-tesGray = func._gray(tesRGB)
 
 traImg = np.concatenate((traRGB, traGray), axis=1)
 valImg = np.concatenate((valRGB, valGray), axis=1)
-tesImg = np.concatenate((tesRGB, tesGray), axis=1)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
@@ -60,19 +54,15 @@ loss_func = loss_func.to(device)
 
 #%% Pack
 tra_data = torch.from_numpy(func._norm(traImg)).type(torch.FloatTensor)
-tes_data = torch.from_numpy(func._norm(tesImg)).type(torch.FloatTensor)
 val_data = torch.from_numpy(func._norm(valImg)).type(torch.FloatTensor)
 
 tra_label = torch.from_numpy(traD['labels']).type(torch.FloatTensor)
-tes_label = torch.from_numpy(tesD['labels']).type(torch.FloatTensor)
 val_label = torch.from_numpy(valD['labels']).type(torch.FloatTensor)
 
 tra_dataset = torch.utils.data.TensorDataset(tra_data, tra_label)
-tes_dataset = torch.utils.data.TensorDataset(tes_data, tes_label)
 val_dataset = torch.utils.data.TensorDataset(val_data, val_label)
 
 tra_dataloader = torch.utils.data.DataLoader(dataset = tra_dataset, batch_size=bz, shuffle=True)
-tes_dataloader = torch.utils.data.DataLoader(dataset = tes_dataset, batch_size=bz, shuffle=False)
 val_dataloader = torch.utils.data.DataLoader(dataset = val_dataset, batch_size=bz, shuffle=False)
 
 #%% Training
@@ -122,28 +112,3 @@ with open(os.path.join(M, 'loss_acc_pt.npy'), 'wb') as f:
     np.save(f, np.array(A))
 
 torch.save(model, os.path.join(M, 'model_pt.pth'))         
-
-#%% Test
-model = torch.load(os.path.join(M, 'model_pt.pth'))
-model.eval()
-with torch.no_grad():
-    for ntes, (Data_E, Label_E) in enumerate(tes_dataloader):
-        data_rgb = Data_E[:,:3,:,:].to(device)
-        data_gray = Data_E[:,-1,:,:].unsqueeze(1)
-        data_gray = data_gray.to(device)
-        pred = model(data_rgb, data_gray)
-
-        out = pred.cpu().data.numpy()
-        pr  = np.argmax(out, axis=1)
-        if ntes==0:
-            prd = pr
-        else:
-            prd = np.concatenate((prd, pr))
-
-    te = tesD['labels']
-    hd = np.sum(prd==te)
-    acc = (hd/te.shape[0])
-
-    print('\n=========================')
-    print('test_acc >> {:.4f}'.format(acc)) 
-    print('=========================')
