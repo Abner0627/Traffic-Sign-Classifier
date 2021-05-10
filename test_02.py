@@ -16,10 +16,11 @@ def _config():
 
 #%%
 P = './test_img'
-P2 = './traffic-signs-data'
+F = './traffic-signs-data/signnames.csv'
 M = './model'
 args = _config()
 sP = './test_img/result'
+sP2 = './img'
 data_list = os.listdir(P)
 tot = []
 data_list = data_list[:-1]
@@ -35,7 +36,7 @@ img_RGB = img.transpose(0,3,1,2)
 img_Gray = func._gray(img_RGB)
 
 tesD = func._norm(np.concatenate((img_RGB, img_Gray), axis=1))
-print(tesD.shape)
+# print(tesD.shape)
 #%% TF
 if args.T:
     import tensorflow.keras as keras
@@ -46,7 +47,7 @@ if args.T:
     pro_model = keras.Sequential([model, keras.layers.Softmax()])
     pred = pro_model.predict(tesD)
     np.save(os.path.join(sP, 'Pred_tf.npy'), pred)
-    print(pred.shape)
+    # print(pred.shape)
 
 elif args.P:
     import torch
@@ -59,17 +60,45 @@ elif args.P:
     pred = torch.nn.functional.softmax((pred), dim=-1)
     pred = pred.data.numpy()
     np.save(os.path.join(sP, 'Pred_pt.npy'), pred)
-    print(pred.shape)
+    # print(pred.shape)
 
 else:
     pt = np.load(os.path.join(sP, 'Pred_pt.npy'))
     tf = np.load(os.path.join(sP, 'Pred_tf.npy'))
-    print(np.argmax(pt, axis=1))
-    print(np.argmax(tf, axis=1))
+    realN = [13, 15, 25, 28, 32]
+    predN_pt = np.argmax(pt, axis=1)
+    predN_tf = np.argmax(tf, axis=1)
+    # print(predN_pt)
+    # print(predN_tf)
     barx = np.arange(43)
-    fig, ax = plt.subplots(5,2, figsize=(25,10))
+    name = np.array(pd.read_csv(os.path.join(F), header=None))[1:, :]
 
-    ax[0,0].imshow(cv2.cvtColor(img[0,...], cv2.COLOR_BGR2RGB))
+    fig, ax = plt.subplots(5,2, figsize=(20,20))
+    for i in range(5):
+        real = name[realN[i], 1]
+        pred = name[predN_pt[i], 1]
+        c = 'royalblue' if real==pred else 'firebrick'
+        ax[i,0].imshow(cv2.cvtColor(img[i,...], cv2.COLOR_BGR2RGB))
+        ax[i,0].set_title(real)
+        ax[i,1].bar(barx, pt[i,...], color=c)
+        ax[i,1].set_xticks(barx)
+        ax[i,1].set_xlim(-1, 43)
+        ax[i,1].set_xticklabels(barx)
+        ax[i,1].set_title(pred)
+    plt.tight_layout()
+    plt.savefig(os.path.join(sP2, 'pt_result.png'))
 
-    ax[0,1].bar(barx, pt[0,...])
-    # plt.show()
+    fig, ax = plt.subplots(5,2, figsize=(20,20))
+    for i in range(5):
+        real = name[realN[i], 1]
+        pred = name[predN_tf[i], 1]
+        c = 'royalblue' if real==pred else 'firebrick'
+        ax[i,0].imshow(cv2.cvtColor(img[i,...], cv2.COLOR_BGR2RGB))
+        ax[i,0].set_title(real)
+        ax[i,1].bar(barx, tf[i,...], color=c)
+        ax[i,1].set_xticks(barx)
+        ax[i,1].set_xlim(-1, 43)
+        ax[i,1].set_xticklabels(barx)
+        ax[i,1].set_title(pred)
+    plt.tight_layout()
+    plt.savefig(os.path.join(sP2, 'tf_result.png'))    

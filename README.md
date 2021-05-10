@@ -108,8 +108,34 @@ RGB有3個channel而灰階圖片則有1個channel。\
 另外訓練時每個epoch的loss與跟驗證集的準確度，＼
 畫成折線圖後如下，以使用的框架分成`model_pt`與`model_tf`：
 
-<img src=https://i.imgur.com/YULaote.png>
-<img src=https://i.imgur.com/GIm1cUL.png>
+<img src=https://i.imgur.com/NAR61eY.png>
+<img src=https://i.imgur.com/IMwujpb.png>
 
+### 模型驗證
+執行`test_01.py`，並選擇使用pytorch (`-P True`)或keras (`-T True`)進行驗證\
+(需先執行對應的訓練程式，`main_pt.py`或`main_tf.py`)；\
+以pytorch來說，需在terminal輸入`python test_01.py -P True`即可。\
+\
+兩者在`test.p`的預測準確度如下：
+Pytorch
+
+<img src=https://i.imgur.com/JjPAvsj.png>
+
+Keras
+
+<img src=https://i.imgur.com/KsaZLft.png>
+
+\
+另從網路上隨機擷取5張道路標誌圖進行驗證，即`test_02.py`，\
+操作方式同`test_01.py`，進行選擇pytorch或keras。\
+驗證完後會輸出對應的預測結果，並以`.npy`形式存於`./test_img/result`，\
+之後直接執行`python test_02.py`出圖，並以藍色與紅色長條圖區分預測正確或錯誤。
+Pytorch
+
+<img src=https://i.imgur.com/ODCU56O.png>
+
+Keras
+
+<img src=https://i.imgur.com/TOQ9NnU.png>
 
 ### 程式碼註解
