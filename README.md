@@ -139,7 +139,252 @@ Keras
 <img src=https://i.imgur.com/dsTCrul.png>
 
 ### 程式碼註解
-分作pytorch以及keras進行說明。
+分作pytorch以及keras進行說明，各參數詳見`config.py`。
 
 **1. Pytorch**
-**(1) **
+**(1) 讀取檔案與前處理**
+```py
+# 檔案路徑與檔名
+dpath = './traffic-signs-data'
+traF = 'train.p'
+valF = 'valid.p'
+
+with open(os.path.join(dpath, traF), 'rb') as f:
+    traD = pickle.load(f)
+with open(os.path.join(dpath, valF), 'rb') as f:
+    valD = pickle.load(f)
+# RGB圖片
+traRGB = traD['features'].transpose(0,3,1,2)
+valRGB = valD['features'].transpose(0,3,1,2)
+# 轉成灰階圖
+traGray = func._gray(traRGB)
+valGray = func._gray(valRGB)
+# 將RGB與灰階圖串接
+traImg = np.concatenate((traRGB, traGray), axis=1)
+valImg = np.concatenate((valRGB, valGray), axis=1)
+# 對每張圖片正規化後轉成tensor
+tra_data = torch.from_numpy(func._norm(traImg))
+           .type(torch.FloatTensor)
+val_data = torch.from_numpy(func._norm(valImg))
+           .type(torch.FloatTensor)
+# 標籤轉成tensor
+tra_label = torch.from_numpy(traD['labels'])
+           .type(torch.FloatTensor)
+val_label = torch.from_numpy(valD['labels'])
+           .type(torch.FloatTensor)
+# 包成pytorch的dataset形式
+tra_dataset = torch.utils.data.TensorDataset(tra_data, tra_label)
+val_dataset = torch.utils.data.TensorDataset(val_data, val_label)
+# 包成pytorch的dataloader形式並設定batch size，以進行訓練
+tra_dataloader = torch.utils.data.DataLoader(dataset=tra_dataset,
+                 batch_size=config.batch, shuffle=True)
+val_dataloader = torch.utils.data.DataLoader(dataset=val_dataset,
+                 batch_size=config.batch, shuffle=False)
+```
+此步驟會將圖片之RGB與灰階圖串接在一起後，\
+為加快模型收斂，故再對圖片進行正規化。\
+此外pytorch提供了`dataset`和`dataloader`形式方便使用者訓練，\
+於該處可設定batch size以及是否進行shuffle。
+
+**(2) 設定參數**
+```py
+# 讀取模型、設定optimizer與loss function
+model = model_pt.ResNet18()
+optim_m = optim.Adam(model.parameters(), lr=config.lr,
+          amsgrad=config.amsgrad)
+loss_func = nn.CrossEntropyLoss()
+# 將模型與loss function放進GPU進行計算
+# (若無GPU則會自動使用CPU)
+model = model.to(device)
+loss_func = loss_func.to(device)
+```
+
+**(3) 模型訓練**
+```py
+#%% Training
+L, A = [], []
+for epoch in range(config.Epoch):
+    # 將模型切換為訓練模式
+    model.train()
+    for ntra, (Data, Label) in enumerate(tra_dataloader):
+        # 初始化optimizer
+        optim_m.zero_grad()
+        # 將資料與標籤放入GPU進行計算
+        data_rgb = Data[:,:3,:,:].to(device)
+        data_gray = Data[:,-1,:,:].unsqueeze(1)
+        data_gray = data_gray.to(device)
+        val = Label.type(torch.long).to(device)
+        pred = model(data_rgb, data_gray)
+        # 計算loss
+        loss = loss_func(pred, val)
+        # Backpropagation
+        loss.backward()
+        optim_m.step()
+```
+與keras相比，pytorch訓練過程較為詳細。\
+首先會先從初始化optimizer開始，再由模型輸出預測結果，\
+接著計算loss及進行Backpropagation。\
+\
+另外在模型架構方面，\
+pytorch是以`(batch size, channel, H, W)`的方式排列；\
+此點與keras`(batch size, H, W, channel)`的形式不同。
+
+
+**(4) 模型驗證**
+```py
+# 將模型切換為評估模式
+model.eval()
+with torch.no_grad():
+    for nval, (Data_V, Label_V) in enumerate(val_dataloader):
+        data_rgb = Data_V[:,:3,:,:].to(device)
+        data_gray = Data_V[:,-1,:,:].unsqueeze(1)
+        data_gray = data_gray.to(device)
+        pred = model(data_rgb, data_gray)
+        # 將預測結果放回CPU並轉成numpy
+        out = pred.cpu().data.numpy()
+        pr  = np.argmax(out, axis=1)
+        if nval==0:
+            prd = pr
+        else:
+            prd = np.concatenate((prd, pr))
+    # 計算預測與驗證集的準確度，
+    # 並print出每個epoch的loss及準確度
+    va = valD['labels']
+    hd = np.sum(prd==va)
+    acc = (hd/va.shape[0])
+    loss_np = loss.item()
+    print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
+            .format(epoch+1, loss_np, acc)) 
+
+    L.append(loss_np)
+    A.append(acc)
+```
+另一方面，為提供除loss外評估模型的方式，\
+故在每個epoch訓練完後，再切換為驗證模式與驗證集計算準確度。\
+
+**(5) 測試模型 (test_01.py)**
+```py
+dpath = './traffic-signs-data'
+tesF = 'test.p'
+M = './model'
+
+with open(os.path.join(dpath, tesF), 'rb') as f:
+    tesD = pickle.load(f)
+
+# Img
+tesRGB = tesD['features'].transpose(0,3,1,2)
+tesGray = func._gray(tesRGB)
+
+tes_data = func._norm(np.concatenate((tesRGB, tesGray, 
+           axis=1))
+tes_label = tesD['labels']
+```
+同樣讀取資料並進行前處理。
+
+```py
+tesDa = torch.from_numpy(tes_data).type(torch.FloatTensor)
+tesLa = torch.from_numpy(tes_label).type(torch.FloatTensor)
+tes_dataset = torch.utils.data.TensorDataset(tesDa, tesLa)
+tes_dataloader = torch.utils.data.DataLoader(dataset=tes_dataset, 
+                 batch_size=32, shuffle=False)
+# 讀取訓練好的模型
+model = torch.load(os.path.join(M, 'model_pt.pth'))
+model.cpu()
+model.eval()
+with torch.no_grad():
+    for ntes, (Data_E, Label_E) in enumerate(tes_dataloader):
+        data_rgb = Data_E[:,:3,:,:]
+        data_gray = Data_E[:,-1,:,:].unsqueeze(1)
+        pred = model(data_rgb, data_gray)
+
+        out = pred.cpu().data.numpy()
+        pr  = np.argmax(out, axis=1)
+        if ntes==0:
+            prd = pr
+        else:
+            prd = np.concatenate((prd, pr))
+
+    te = tesD['labels']
+    hd = np.sum(prd==te)
+    acc = (hd/te.shape[0])
+
+    print('\n=========================')
+    print('test_acc >> {:.4f}'.format(acc)) 
+    print('=========================')
+```
+基本上與驗證時大同小異。\
+\
+**2. Keras**
+**(1) 讀取檔案與前處理**
+```py
+#%% Load
+dpath = './traffic-signs-data'
+traF = 'train.p'
+valF = 'valid.p'
+
+with open(os.path.join(dpath, traF), 'rb') as f:
+    traD = pickle.load(f)
+with open(os.path.join(dpath, valF), 'rb') as f:
+    valD = pickle.load(f)
+
+# Img
+traRGB = traD['features'].transpose(0,3,1,2)
+valRGB = valD['features'].transpose(0,3,1,2)
+
+traGray = func._gray(traRGB)
+valGray = func._gray(valRGB)
+
+tra_data = func._norm(np.concatenate((traRGB, traGray),
+           axis=1)).transpose(0,2,3,1)
+val_data = func._norm(np.concatenate((valRGB, valGray),
+           axis=1)).transpose(0,2,3,1)
+tra_label = traD['labels']
+val_label = valD['labels']
+# 將資料轉成tf.float16進行訓練
+tra_data = tf.image.convert_image_dtype(tra_data,
+           dtype=tf.float16, saturate=False)
+val_data = tf.image.convert_image_dtype(val_data,
+           dtype=tf.float16, saturate=False)
+```
+
+**(2) 設定參數**
+```py
+bz = config.batch
+model = model_tf.ResNet18()
+optim_m = keras.optimizers.Adam(learning_rate=config.lr,
+          amsgrad=config.amsgrad)
+```
+
+**(3) 模型訓練與驗證**
+```py
+# 載入optimizer與loss function
+model.compile(optimizer=optim_m, 
+              loss=keras.losses.SparseCategoricalCrossentropy(
+                 from_logits=True), 
+              metrics=['accuracy'])
+# 訓練模型並記錄各epoch的loss與accuracy
+history = model.fit(tra_data, tra_label, batch_size=bz,
+                    epochs=config.Epoch, verbose=2, shuffle=True,
+                    validation_data=(val_data, val_label))
+# 以numpy array形式記錄，方便儲存。
+loss = np.array(history.history['loss'])
+val_acc = np.array(history.history['val_accuracy'])
+```
+
+**(4) 測試模型 (test_01.py)**
+```py
+tesDa = tes_data.transpose(0,2,3,1)
+tesDa = tf.image.convert_image_dtype(tesDa, dtype=tf.float16, saturate=False)
+model = keras.models.load_model(os.path.join(M, 'model_tf'))
+pro_model = keras.Sequential([model, keras.layers.Softmax()])
+pred = pro_model.predict(tesDa)
+pro_pred = np.argmax(pred, axis=1)
+
+hd = np.sum(pro_pred==tes_label)
+acc = (hd/tes_label.shape[0])
+
+print('\n=========================')
+print('test_acc >> {:.4f}'.format(acc)) 
+print('=========================')
+```
+讀取資料部分與pytorch一樣
