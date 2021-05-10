@@ -116,7 +116,7 @@ RGB有3個channel而灰階圖片則有1個channel。\
 (需先執行對應的訓練程式，`main_pt.py`或`main_tf.py`)；\
 以pytorch來說，需在terminal輸入`python test_01.py -P True`即可。\
 \
-兩者在`test.p`的預測準確度如下：
+兩者在`test.p`的預測準確度如下：\
 Pytorch
 
 <img src=https://i.imgur.com/JjPAvsj.png>
@@ -129,7 +129,7 @@ Keras
 另從網路上隨機擷取5張道路標誌圖進行驗證，即`test_02.py`，\
 操作方式同`test_01.py`，進行選擇pytorch或keras。\
 驗證完後會輸出對應的預測結果，並以`.npy`形式存於`./test_img/result`，\
-之後直接執行`python test_02.py`出圖，並以藍色與紅色長條圖區分預測正確或錯誤。
+之後直接執行`python test_02.py`出圖，並以藍色與紅色長條圖區分預測正確或錯誤。\
 Pytorch
 
 <img src=https://i.imgur.com/bS97epM.png>
