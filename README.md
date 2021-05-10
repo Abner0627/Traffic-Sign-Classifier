@@ -84,7 +84,7 @@ python 3.8.5
 為使RGB與灰階圖的特徵分開擷取，之後再將特徵串接，\
 故再增加一層convolution，總計有13層。
 
-<img src=https://i.imgur.com/nCA9B3A.png>
+<img src=https://i.imgur.com/73o2jRx.png>
 
 此外這次作業也分別利用pytorch與keras實現上述模型架構，\
 詳見`model_pt.py`與`model_tf.py`。
