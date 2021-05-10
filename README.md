@@ -132,10 +132,14 @@ Keras
 之後直接執行`python test_02.py`出圖，並以藍色與紅色長條圖區分預測正確或錯誤。
 Pytorch
 
-<img src=https://i.imgur.com/ODCU56O.png>
+<img src=https://i.imgur.com/bS97epM.png>
 
 Keras
 
-<img src=https://i.imgur.com/TOQ9NnU.png>
+<img src=https://i.imgur.com/dsTCrul.png>
 
 ### 程式碼註解
+分作pytorch以及keras進行說明。
+
+**1. Pytorch**
+**(1) **

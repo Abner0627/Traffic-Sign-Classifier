@@ -79,12 +79,12 @@ else:
         pred = name[predN_pt[i], 1]
         c = 'royalblue' if real==pred else 'firebrick'
         ax[i,0].imshow(cv2.cvtColor(img[i,...], cv2.COLOR_BGR2RGB))
-        ax[i,0].set_title(real)
+        ax[i,0].set_title(real, size=30)
         ax[i,1].bar(barx, pt[i,...], color=c)
         ax[i,1].set_xticks(barx)
         ax[i,1].set_xlim(-1, 43)
         ax[i,1].set_xticklabels(barx)
-        ax[i,1].set_title(pred)
+        ax[i,1].set_title(pred, size=30)
     plt.tight_layout()
     plt.savefig(os.path.join(sP2, 'pt_result.png'))
 
@@ -94,11 +94,11 @@ else:
         pred = name[predN_tf[i], 1]
         c = 'royalblue' if real==pred else 'firebrick'
         ax[i,0].imshow(cv2.cvtColor(img[i,...], cv2.COLOR_BGR2RGB))
-        ax[i,0].set_title(real)
+        ax[i,0].set_title(real, size=30)
         ax[i,1].bar(barx, tf[i,...], color=c)
         ax[i,1].set_xticks(barx)
         ax[i,1].set_xlim(-1, 43)
         ax[i,1].set_xticklabels(barx)
-        ax[i,1].set_title(pred)
+        ax[i,1].set_title(pred, size=30)
     plt.tight_layout()
     plt.savefig(os.path.join(sP2, 'tf_result.png'))    
