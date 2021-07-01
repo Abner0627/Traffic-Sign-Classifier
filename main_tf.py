@@ -3,7 +3,7 @@ import numpy as np
 import config
 import pickle
 import os
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.keras as keras
 import tensorflow as tf
 import func
@@ -52,8 +52,8 @@ history = model.fit(tra_data, tra_label, batch_size=bz,
 loss = np.array(history.history['loss'])
 val_acc = np.array(history.history['val_accuracy'])
 
-# model.save(os.path.join(M, 'model_tf'))
+model.save(os.path.join(M, 'model_tf'))
 
-# with open(os.path.join(M, 'loss_acc_tf.npy'), 'wb') as f:          
-#     np.save(f, loss)
-#     np.save(f, val_acc)
+with open(os.path.join(M, 'loss_acc_tf.npy'), 'wb') as f:          
+    np.save(f, loss)
+    np.save(f, val_acc)
