@@ -81,7 +81,6 @@ for epoch in range(config.Epoch):
         optim_m.step()
     
     model.eval()
-
     with torch.no_grad():
         for nval, (Data_V, Label_V) in enumerate(val_dataloader):
             data_rgb = Data_V[:,:3,:,:].to(device)
@@ -96,15 +95,15 @@ for epoch in range(config.Epoch):
             else:
                 prd = np.concatenate((prd, pr))
 
-        va = valD['labels']
-        hd = np.sum(prd==va)
-        acc = (hd/va.shape[0])
-        loss_np = loss.item()
-        print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
-                .format(epoch+1, loss_np, acc)) 
+    va = valD['labels']
+    hd = np.sum(prd==va)
+    acc = (hd/va.shape[0])
+    loss_np = loss.item()
+    print('epoch[{}] >> loss:{:.4f}, val_acc:{:.4f}'
+            .format(epoch+1, loss_np, acc)) 
 
-        L.append(loss_np)
-        A.append(acc)
+    L.append(loss_np)
+    A.append(acc)
 
 with open(os.path.join(M, 'loss_acc_pt.npy'), 'wb') as f:          
     np.save(f, np.array(L))
