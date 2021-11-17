@@ -28,7 +28,7 @@ python 3.8.5
 **5. (選用) 安裝CUDA等所需套件**\
 若要**使用tensorflow並調用GPU**時，則須依官網 ([Link](https://www.tensorflow.org/install/gpu?hl=zh-tw#software_requirements))指示安裝對應套件。
 
-### 資料集分析
+## 資料集分析
 
 **1. 各類別可視化**\
 本資料集共蒐集43類不同的德國交通號誌。\
@@ -64,7 +64,7 @@ python 3.8.5
 
 如此便能開始進行模型的訓練。
 
-### 模型介紹
+## 模型介紹
 
 本次作業使用2015年於提出的深度殘差網路，ResNet。\
 為求節省訓練時間及減少overfitting的影響，\
@@ -89,7 +89,7 @@ python 3.8.5
 此外這次作業也分別利用pytorch與keras實現上述模型架構，\
 詳見`model_pt.py`與`model_tf.py`。
 
-### 訓練細節
+## 訓練細節
 
 本次作業首先對各張圖片的每個channel進行特徵縮放，\
 RGB有3個channel而灰階圖片則有1個channel。\
@@ -111,7 +111,7 @@ RGB有3個channel而灰階圖片則有1個channel。\
 <img src=https://i.imgur.com/NAR61eY.png>
 <img src=https://i.imgur.com/IMwujpb.png>
 
-### 模型驗證
+## 模型驗證
 執行`test_01.py`，並選擇使用pytorch (`-P True`)或keras (`-T True`)進行驗證\
 (需先執行對應的訓練程式，`main_pt.py`或`main_tf.py`)；\
 以pytorch來說，需在terminal輸入`python test_01.py -P True`即可。\
@@ -138,7 +138,7 @@ Keras
 
 <img src=https://i.imgur.com/dsTCrul.png>
 
-### 程式碼註解
+## 程式碼註解
 分作pytorch以及keras進行說明，各參數詳見`config.py`。
 
 **1. Pytorch**\
